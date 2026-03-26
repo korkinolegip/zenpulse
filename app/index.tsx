@@ -8,7 +8,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useSubscription } from '@/context/SubscriptionContext';
@@ -32,6 +32,7 @@ const plans = {
 export default function PaywallScreen() {
   const { selectedPlan, setSelectedPlan, activateTrial } = useSubscription();
   const [loading, setLoading] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const handleTrial = () => {
     setLoading(true);
@@ -131,6 +132,15 @@ export default function PaywallScreen() {
             </Text>
           </View>
         </ScrollView>
+
+        {/* Fixed footer — паттерн Calm/Headspace: всегда видна, вне ScrollView */}
+        <TouchableOpacity
+          onPress={() => router.replace('/home')}
+          style={styles.skipFooter}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.skipFooterText}>Продолжить без подписки</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -290,5 +300,17 @@ const styles = StyleSheet.create({
     color: Colors.whiteAlpha40,
     textAlign: 'center',
     lineHeight: 18,
+  },
+  skipFooter: {
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderTopWidth: 1,
+    borderTopColor: Colors.whiteAlpha10,
+  },
+  skipFooterText: {
+    fontSize: 13,
+    color: Colors.whiteAlpha40,
+    textDecorationLine: 'underline',
+    textDecorationColor: Colors.whiteAlpha40,
   },
 });

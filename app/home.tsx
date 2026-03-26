@@ -17,6 +17,8 @@ import { Colors } from '@/constants/colors';
 
 const { width } = Dimensions.get('window');
 const isSmall = width <= 375;
+const CARD_WIDTH = width - (isSmall ? 32 : 40);
+const CARD_IMAGE_HEIGHT = isSmall ? 140 : 160;
 
 type Mood = 'happy' | 'neutral' | 'sad';
 
@@ -62,13 +64,12 @@ export default function HomeScreen() {
           </View>
 
           {/* AI Mood Section */}
-          <View style={styles.section}>
+          <View style={styles.aiSection}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionIcon}>🤖</Text>
               <Text style={styles.sectionTitle}>AI Настрой дня</Text>
             </View>
 
-            {/* Mood Selector */}
             <View style={styles.moodRow}>
               {moods.map((m) => (
                 <TouchableOpacity
@@ -91,7 +92,6 @@ export default function HomeScreen() {
               ))}
             </View>
 
-            {/* Generate Button */}
             <TouchableOpacity
               onPress={handleGenerate}
               disabled={!selectedMood || loadingAI}
@@ -113,68 +113,80 @@ export default function HomeScreen() {
               </LinearGradient>
             </TouchableOpacity>
 
-            {/* Affirmation Result */}
             {affirmation && !loadingAI && (
               <View style={styles.affirmationCard}>
                 <Text style={styles.affirmationQuote}>"</Text>
                 <Text style={styles.affirmationText}>{affirmation}</Text>
-                <Text style={styles.affirmationMeta}>
-                  AI · на основе твоего настроения
-                </Text>
+                <Text style={styles.affirmationMeta}>AI · на основе твоего настроения</Text>
               </View>
             )}
           </View>
 
-          {/* Meditations List */}
-          <View style={styles.section}>
+          {/* Meditations */}
+          <View style={styles.meditationsSection}>
             <Text style={styles.sectionTitle}>Сессии медитаций</Text>
+
             {meditations.map((med) => {
               const locked = med.isPremium && !isSubscribed;
               return (
                 <TouchableOpacity
                   key={med.id}
-                  style={[styles.meditationCard, locked && styles.meditationCardLocked]}
+                  style={[styles.card, locked && styles.cardLocked]}
                   onPress={() => handleCardPress(med.isPremium)}
-                  activeOpacity={locked ? 0.6 : 0.85}
+                  activeOpacity={locked ? 0.6 : 0.88}
                 >
-                  <View style={[styles.meditationEmoji, { backgroundColor: med.color }]}>
-                    <Text style={styles.meditationEmojiText}>
+                  {/* Gradient image area */}
+                  <LinearGradient
+                    colors={med.gradient}
+                    style={styles.cardImage}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                  >
+                    <Text style={styles.cardEmoji}>
                       {locked ? '🔒' : med.emoji}
                     </Text>
-                  </View>
-                  <View style={styles.meditationInfo}>
-                    <Text style={[styles.meditationTitle, locked && styles.meditationTitleLocked]}>
+                    {locked && (
+                      <View style={styles.lockOverlay}>
+                        <Text style={styles.lockLabel}>Premium</Text>
+                      </View>
+                    )}
+                    {!locked && (
+                      <View style={styles.playOverlay}>
+                        <Text style={styles.playIcon}>▶</Text>
+                      </View>
+                    )}
+                  </LinearGradient>
+
+                  {/* Info area */}
+                  <View style={styles.cardInfo}>
+                    <Text style={[styles.cardTitle, locked && styles.cardTitleLocked]} numberOfLines={1}>
                       {med.title}
                     </Text>
-                    <View style={styles.meditationMeta}>
-                      <View style={styles.categoryTag}>
-                        <Text style={styles.categoryText}>{med.category}</Text>
+                    <View style={styles.cardMeta}>
+                      <View style={[styles.categoryTag, locked && styles.categoryTagLocked]}>
+                        <Text style={[styles.categoryText, locked && styles.categoryTextLocked]}>
+                          {med.category}
+                        </Text>
                       </View>
-                      <Text style={styles.durationText}>⏱ {med.duration}</Text>
+                      <Text style={[styles.durationText, locked && styles.durationLocked]}>
+                        ⏱ {med.duration}
+                      </Text>
                     </View>
                   </View>
-                  {locked && (
-                    <View style={styles.premiumBadge}>
-                      <Text style={styles.premiumText}>Premium</Text>
-                    </View>
-                  )}
-                  {!locked && (
-                    <Text style={styles.playIcon}>▶</Text>
-                  )}
                 </TouchableOpacity>
               );
             })}
           </View>
 
-          {/* Upsell if not subscribed */}
+          {/* Upsell banner */}
           {!isSubscribed && (
             <TouchableOpacity
-              style={styles.upsellBanner}
               onPress={() => router.push('/')}
               activeOpacity={0.85}
+              style={styles.upsellBanner}
             >
               <LinearGradient
-                colors={['rgba(155,89,182,0.3)', 'rgba(108,52,131,0.3)']}
+                colors={['rgba(155,89,182,0.35)', 'rgba(108,52,131,0.35)']}
                 style={styles.upsellGradient}
               >
                 <Text style={styles.upsellText}>
@@ -191,19 +203,15 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
+  gradient: { flex: 1 },
+  safeArea: { flex: 1 },
   scroll: {
     paddingHorizontal: isSmall ? 16 : 20,
     paddingBottom: 40,
   },
   header: {
     paddingTop: isSmall ? 20 : 28,
-    paddingBottom: isSmall ? 16 : 24,
+    paddingBottom: isSmall ? 16 : 20,
   },
   title: {
     fontSize: isSmall ? 28 : 34,
@@ -216,11 +224,13 @@ const styles = StyleSheet.create({
     color: Colors.whiteAlpha60,
     marginTop: 4,
   },
-  section: {
-    marginBottom: isSmall ? 20 : 28,
+
+  // AI Section
+  aiSection: {
     backgroundColor: Colors.whiteAlpha10,
     borderRadius: 20,
     padding: isSmall ? 14 : 18,
+    marginBottom: isSmall ? 20 : 24,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -255,10 +265,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.moodBgSelected,
     borderColor: Colors.purple,
   },
-  moodEmoji: {
-    fontSize: isSmall ? 24 : 28,
-    marginBottom: 4,
-  },
+  moodEmoji: { fontSize: isSmall ? 24 : 28, marginBottom: 4 },
   moodLabel: {
     fontSize: isSmall ? 10 : 11,
     color: Colors.whiteAlpha60,
@@ -275,9 +282,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 50,
   },
-  generateBtnDisabled: {
-    opacity: 0.5,
-  },
+  generateBtnDisabled: { opacity: 0.5 },
   generateText: {
     fontSize: isSmall ? 14 : 15,
     fontWeight: '700',
@@ -287,7 +292,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
     backgroundColor: Colors.whiteAlpha10,
     borderRadius: 14,
-    padding: isSmall ? 14 : 18,
+    padding: isSmall ? 14 : 16,
     borderLeftWidth: 3,
     borderLeftColor: Colors.purple,
   },
@@ -309,82 +314,102 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.whiteAlpha40,
   },
-  meditationCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.cardBg,
-    borderRadius: 14,
-    padding: isSmall ? 12 : 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+
+  // Meditation cards
+  meditationsSection: {
+    marginBottom: isSmall ? 16 : 20,
   },
-  meditationCardLocked: {
+  card: {
+    width: CARD_WIDTH,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: isSmall ? 14 : 16,
+    borderWidth: 1,
+    borderColor: Colors.whiteAlpha10,
+  },
+  cardLocked: {
     opacity: 0.45,
   },
-  meditationEmoji: {
-    width: isSmall ? 48 : 54,
-    height: isSmall ? 48 : 54,
-    borderRadius: isSmall ? 12 : 14,
+  cardImage: {
+    height: CARD_IMAGE_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    position: 'relative',
   },
-  meditationEmojiText: {
-    fontSize: isSmall ? 22 : 26,
+  cardEmoji: {
+    fontSize: isSmall ? 52 : 60,
   },
-  meditationInfo: {
-    flex: 1,
+  lockOverlay: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
-  meditationTitle: {
-    fontSize: isSmall ? 14 : 16,
+  lockLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.gold,
+    letterSpacing: 0.5,
+  },
+  playOverlay: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playIcon: {
+    fontSize: 14,
+    color: Colors.white,
+    marginLeft: 2,
+  },
+  cardInfo: {
+    paddingHorizontal: isSmall ? 14 : 16,
+    paddingVertical: isSmall ? 12 : 14,
+  },
+  cardTitle: {
+    fontSize: isSmall ? 16 : 18,
     fontWeight: '700',
     color: Colors.white,
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  meditationTitleLocked: {
-    color: Colors.whiteAlpha60,
-  },
-  meditationMeta: {
+  cardTitleLocked: { color: Colors.whiteAlpha60 },
+  cardMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
   categoryTag: {
     backgroundColor: Colors.whiteAlpha20,
     borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
   },
+  categoryTagLocked: { backgroundColor: Colors.whiteAlpha10 },
   categoryText: {
-    fontSize: 11,
+    fontSize: 12,
     color: Colors.whiteAlpha80,
     fontWeight: '600',
   },
+  categoryTextLocked: { color: Colors.whiteAlpha40 },
   durationText: {
     fontSize: 12,
     color: Colors.whiteAlpha60,
   },
-  premiumBadge: {
-    backgroundColor: Colors.gold,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  premiumText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#1a0533',
-  },
-  playIcon: {
-    fontSize: 16,
-    color: Colors.purpleLight,
-    paddingLeft: 8,
-  },
+  durationLocked: { color: Colors.whiteAlpha40 },
+
+  // Upsell
   upsellBanner: {
     borderRadius: 16,
     overflow: 'hidden',
-    marginBottom: 8,
   },
   upsellGradient: {
     flexDirection: 'row',

@@ -4,7 +4,7 @@ export type Meditation = {
   duration: string;
   category: string;
   emoji: string;
-  color: string;
+  gradient: [string, string];
   isPremium: boolean;
 };
 
@@ -15,7 +15,7 @@ export const meditations: Meditation[] = [
     duration: '10 мин',
     category: 'Фокус',
     emoji: '🌅',
-    color: '#1a1a2e',
+    gradient: ['#FF6B6B', '#FFE66D'],
     isPremium: false,
   },
   {
@@ -24,7 +24,7 @@ export const meditations: Meditation[] = [
     duration: '15 мин',
     category: 'Стресс',
     emoji: '🌊',
-    color: '#16213e',
+    gradient: ['#4ECDC4', '#2980B9'],
     isPremium: false,
   },
   {
@@ -33,7 +33,7 @@ export const meditations: Meditation[] = [
     duration: '20 мин',
     category: 'Сон',
     emoji: '🌙',
-    color: '#0f3460',
+    gradient: ['#2C3E50', '#4A1942'],
     isPremium: false,
   },
   {
@@ -42,7 +42,7 @@ export const meditations: Meditation[] = [
     duration: '8 мин',
     category: 'Энергия',
     emoji: '⚡',
-    color: '#533483',
+    gradient: ['#F7971E', '#FFD200'],
     isPremium: true,
   },
   {
@@ -51,7 +51,7 @@ export const meditations: Meditation[] = [
     duration: '12 мин',
     category: 'Фокус',
     emoji: '✨',
-    color: '#2d132c',
+    gradient: ['#C471F5', '#FA71CD'],
     isPremium: true,
   },
   {
@@ -60,7 +60,7 @@ export const meditations: Meditation[] = [
     duration: '25 мин',
     category: 'Баланс',
     emoji: '🧘',
-    color: '#1b262c',
+    gradient: ['#134E5E', '#71B280'],
     isPremium: true,
   },
 ];
