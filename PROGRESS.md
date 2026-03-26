@@ -8,22 +8,20 @@
 - [x] SPEC.md — написан (все 5 модулей, 6 блоков каждый)
 - [x] CLAUDE.md — написан (≤120 строк)
 - [x] PROGRESS.md — создан
-- [ ] Структура папок и package.json
-- [ ] SubscriptionContext
-- [ ] data/meditations.ts + AI mock
-- [ ] app/_layout.tsx
-- [ ] app/index.tsx (Paywall)
-- [ ] app/home.tsx (Home + AI Mood)
-- [ ] README.md с ответами на контрольный вопрос
-- [ ] GitHub push
+- [x] constants/colors.ts — цветовая система
+- [x] context/SubscriptionContext.tsx — isSubscribed, activateTrial
+- [x] data/meditations.ts — 6 сессий + 9 AI mock ответов
+- [x] app/_layout.tsx — Stack + SubscriptionProvider
+- [x] app/index.tsx — PaywallScreen (градиент, планы, CTA)
+- [x] app/home.tsx — HomeScreen (медитации + AI Mood)
+- [x] README.md с ответами на контрольный вопрос
+- [x] GitHub: github.com/korkinolegip/zenpulse
 
 ## Сейчас в работе
-Создание кодовой базы проекта
+✅ ЗАВЕРШЕНО — прототип готов к демонстрации
 
 ## Следующий шаг
-1. `npx create-expo-app@latest ZenPulseApp --template blank-typescript` или ручная инициализация
-2. Настройка app.json (newArchEnabled: false, SDK 54)
-3. Кодинг по SPEC.md
+Записать screencast 7-12 мин: Paywall → Trial → Home → AI аффирмация → locked card → Paywall
 
 ## Известные проблемы
 - Нет Android Studio → тестируем только на iPhone через Expo Go
