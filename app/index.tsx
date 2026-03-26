@@ -303,14 +303,12 @@ const styles = StyleSheet.create({
   },
   skipFooter: {
     alignItems: 'center',
-    paddingVertical: 14,
-    borderTopWidth: 1,
-    borderTopColor: Colors.whiteAlpha10,
+    paddingVertical: 10,
+    paddingBottom: 4,
   },
   skipFooterText: {
-    fontSize: 13,
-    color: Colors.whiteAlpha40,
-    textDecorationLine: 'underline',
-    textDecorationColor: Colors.whiteAlpha40,
+    fontSize: 12,
+    color: Colors.whiteAlpha20,
+    letterSpacing: 0.2,
   },
 });
